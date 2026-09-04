@@ -1,0 +1,73 @@
+"""
+Configuration file for Coliseo Romano game
+Global settings and constants
+"""
+
+# Screen settings
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
+SCREEN_FPS = 60
+
+# Device detection
+MOBILE_WIDTH_THRESHOLD = 600
+TABLET_WIDTH_THRESHOLD = 1024
+
+# Colors (RGB)
+COLOR_BLACK = (0, 0, 0)
+COLOR_WHITE = (255, 255, 255)
+COLOR_RED = (220, 53, 69)
+COLOR_GREEN = (40,167, 69)
+COLOR_BLUE = (0, 123, 255)
+COLOR_YELLOW = (255, 193, 7)
+COLOR_GRAY = (108, 117, 125)
+COLOR_DARK_GRAY = (52, 58, 64)
+COLOR_GOLD = (212, 175, 55)
+COLOR_BLOOD = (139, 0, 0)
+
+# Roman theme colors
+COLOR_TERRACOTTA = (204, 85, 0)
+COLOR_ROMAN_PURPLE = (128, 0, 128)
+COLOR_ROMAN_GOLD = (184, 134, 11)
+
+# Game states
+STATE_MENU = "menu"
+STATE_MANAGEMENT = "management"
+STATE_PRE_COMBAT = "pre_combat"
+STATE_COMBAT = "combat"
+STATE_RESULTS = "results"
+STATE_SHOP = "shop"
+STATE_CEMETERY = "cemetery"
+STATE_SETTINGS = "settings"
+
+# Game difficulty
+DIFFICULTY_EASY = 1.0
+DIFFICULTY_MEDIUM = 1.5
+DIFFICULTY_HARD = 2.0
+DIFFICULTY_EXTREME = 3.0
+
+# Gladiator attributes limits
+MIN_ATTRIBUTE = 1
+MAX_ATTRIBUTE = 20
+
+# Combat balance
+BASE_ATTACK_COOLDOWN = 1.0  # seconds
+BASE_SPECIAL_COOLDOWN = 5.0  # seconds
+DEFENSE_DAMAGE_REDUCTION = 0.4  # 40% reduction
+CRITICAL_HIT_CHANCE = 0.15  # 15%
+CRITICAL_MULTIPLIER = 1.5
+
+# Economy
+BASE_RECRUIT_COST = 100
+BASE_TRAINING_COST = 50
+MONEY_MULTIPLIER_EASY = 1.0
+MONEY_MULTIPLIER_MEDIUM = 1.5
+MONEY_MULTIPLIER_HARD = 2.0
+MONEY_MULTIPLIER_EXTREME = 3.0
+
+# Progression
+MAX_LEVEL = 50
+EXPERIENCE_CURVE = 1.1  # Exponential growth
+
+# Save file
+SAVE_FILE = "game_save.json"
+CEMETERY_FILE = "cemetery.json"
