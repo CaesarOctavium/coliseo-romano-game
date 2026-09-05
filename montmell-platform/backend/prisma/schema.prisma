@@ -1,0 +1,118 @@
+// El Montmell — Dual Platform
+// Prisma schema: one database shared by "El Montmell Connect" (citizen PWA)
+// and "Montmell Gestiona" (council/admin panel).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LicenseTier {
+  FREE
+  BASIC
+  PRO
+}
+
+enum UserRole {
+  CITIZEN
+  COUNCIL
+  MAYOR
+}
+
+enum IncidentStatus {
+  PENDING
+  IN_REVIEW
+  ASSIGNED
+  RESOLVED
+}
+
+model Municipality {
+  id             String      @id @default(cuid())
+  name           String
+  slug           String      @unique
+  licenseTier    LicenseTier @default(FREE) @map("license_tier")
+
+  // Demo Mode: while this is in the future, the license middleware treats
+  // the municipality as PRO regardless of licenseTier.
+  demoExpiresAt  DateTime?   @map("demo_expires_at")
+
+  users      User[]
+  incidents  Incident[]
+  licenses   License[]
+
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("municipalities")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  passwordHash   String   @map("password_hash")
+  name           String
+  role           UserRole @default(CITIZEN)
+
+  municipality   Municipality @relation(fields: [municipalityId], references: [id])
+  municipalityId String       @map("municipality_id")
+
+  reportedIncidents Incident[] @relation("ReportedBy")
+  assignedIncidents Incident[] @relation("AssignedTo")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([municipalityId])
+  @@map("users")
+}
+
+model Incident {
+  id            String         @id @default(cuid())
+  title         String
+  description   String
+  status        IncidentStatus @default(PENDING)
+  seenByCouncil Boolean        @default(false) @map("seen_by_council")
+
+  // Premium-only fields. Populated by council members once a PRO license
+  // is active; hidden from citizens whose municipality is on FREE/BASIC.
+  estimatedTime String? @map("estimated_time")
+  lastComment   String? @map("last_comment")
+
+  reportedBy   User   @relation("ReportedBy", fields: [reportedById], references: [id])
+  reportedById String @map("reported_by_id")
+
+  assignedTo   User?   @relation("AssignedTo", fields: [assignedToId], references: [id])
+  assignedToId String? @map("assigned_to_id")
+
+  municipality   Municipality @relation(fields: [municipalityId], references: [id])
+  municipalityId String       @map("municipality_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([municipalityId])
+  @@map("incidents")
+}
+
+// Audit trail of purchased/renewed licenses. Municipality.licenseTier is the
+// cached "current" value the middleware reads on every request; this table
+// is the source of truth for how it got there (sale, renewal, demo).
+model License {
+  id        String      @id @default(cuid())
+  tier      LicenseTier
+  isDemo    Boolean     @default(false) @map("is_demo")
+  startsAt  DateTime    @default(now()) @map("starts_at")
+  endsAt    DateTime?   @map("ends_at")
+
+  municipality   Municipality @relation(fields: [municipalityId], references: [id])
+  municipalityId String       @map("municipality_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([municipalityId])
+  @@map("licenses")
+}
